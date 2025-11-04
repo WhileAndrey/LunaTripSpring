@@ -1,0 +1,94 @@
+@startuml
+title 🌕 LunaTripSpring – Architecture and Entity Relations
+
+' ====== PACKAGES ======
+package "com.lunatrip.app.model" {
+    class User {
+        Long id
+        String email
+        String password
+        String fullName
+        Role role
+    }
+
+    class Role {
+        <<enum>>
+        USER
+        ADMIN
+    }
+
+    class Flight {
+        Long id
+        String flightNumber
+        LocalDateTime departureTime
+        LocalDateTime arrivalTime
+        Double price
+    }
+
+    class Room {
+        Long id
+        String roomNumber
+        Integer capacity
+        Double pricePerNight
+    }
+
+    class Booking {
+        Long id
+        LocalDateTime bookingDate
+        User user
+        Flight flight
+        Room room
+    }
+
+    ' Связи между сущностями
+    User "1" --> "many" Booking
+    Booking "1" --> "1" Flight
+    Booking "1" --> "1" Room
+}
+
+package "com.lunatrip.app.repository" {
+    interface UserRepository
+    interface FlightRepository
+    interface RoomRepository
+    interface BookingRepository
+}
+
+package "com.lunatrip.app.service" {
+    class UserService
+    class AuthService
+    class FlightService
+    class RoomService
+    class BookingService
+}
+
+package "com.lunatrip.app.controller" {
+    class AuthController
+    class UserController
+    class FlightController
+    class RoomController
+    class BookingController
+}
+
+package "com.lunatrip.app.security" {
+    class JwtTokenProvider
+    class JwtFilter
+    class SecurityConfig
+}
+
+' ====== DEPENDENCIES ======
+AuthController --> AuthService
+UserController --> UserService
+FlightController --> FlightService
+RoomController --> RoomService
+BookingController --> BookingService
+
+AuthService --> UserRepository
+UserService --> UserRepository
+FlightService --> FlightRepository
+RoomService --> RoomRepository
+BookingService --> BookingRepository
+
+JwtFilter --> JwtTokenProvider
+SecurityConfig --> JwtFilter
+
+@enduml
